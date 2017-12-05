@@ -26,7 +26,7 @@ func (sh *StockerHandler) Handle(c *gin.Context) {
         sh.deleteAll(c)
     default:
         log.Println("invalid function!")
-        c.String(400, "ERROR")
+        c.String(200, "ERROR")
     }
     return
 }
@@ -34,12 +34,12 @@ func (sh *StockerHandler) Handle(c *gin.Context) {
 func (sh *StockerHandler) addStock(c *gin.Context) {
     name := c.Query("name")
     if name == "" {
-        c.String(400, "ERROR")
+        c.String(200, "ERROR")
         return
     }
     amount, err := strconv.Atoi(c.DefaultQuery("amount", "1"))
     if err != nil || amount <= 0 {
-        c.String(400, "ERROR")
+        c.String(200, "ERROR")
         return
     }
 
@@ -61,17 +61,17 @@ func (sh *StockerHandler) checkStock(c *gin.Context) {
 func (sh *StockerHandler) sell(c *gin.Context) {
     name := c.Query("name")
     if name == "" {
-        c.String(400, "ERROR")
+        c.String(200, "ERROR")
         return
     }
     amount, err := strconv.Atoi(c.DefaultQuery("amount", "1"))
     if err != nil || amount <= 0 {
-        c.String(400, "ERROR")
+        c.String(200, "ERROR")
         return
     }
     price, err := strconv.Atoi(c.DefaultQuery("price", "0"))
     if err != nil || amount < 0 {
-        c.String(400, "ERROR")
+        c.String(200, "ERROR")
         return
     }
 
