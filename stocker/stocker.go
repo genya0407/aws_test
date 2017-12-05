@@ -58,3 +58,18 @@ func (st *Stocker) AddStock(name string, amount int) error {
         return nil
     })
 }
+
+func (st *Stocker) DeleteAll() error {
+    return st.withTx(func(tx *goqu.TxDatabase) error {
+        _, err := tx.From("stocks").Delete().Exec()
+        if err != nil {
+            return err
+        }
+        _, err = tx.From("items").Delete().Exec()
+        if err != nil {
+            return err
+        }
+
+        return nil
+    })
+}

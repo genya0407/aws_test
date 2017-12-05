@@ -22,9 +22,9 @@ func (sh *StockerHandler) Handle(c *gin.Context) {
         sh.sell(c)
     case "checksales":
         sh.checkSales(c)
+    */
     case "deleteall":
         sh.deleteAll(c)
-    */
     default:
         log.Println("invalid function!")
         c.String(400, "ERROR")
@@ -44,8 +44,11 @@ func (sh *StockerHandler) addStock(c *gin.Context) {
         return
     }
 
-    log.Println("before addstock")
     sh.Stocker.AddStock(name, amount)
-    log.Println("after addstock")
+    c.String(200, "")
+}
+
+func (sh *StockerHandler) deleteAll(c *gin.Context) {
+    sh.Stocker.DeleteAll()
     c.String(200, "")
 }
