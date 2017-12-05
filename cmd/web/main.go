@@ -10,6 +10,7 @@ import (
 func setupRouter() *gin.Engine {
     r := gin.Default()
     r.Use(gzip.Gzip(gzip.DefaultCompression))
+    r.GET("/", handler.Amazon)
     r.GET("/secret/", handler.BasicAuth)
 
     return r
