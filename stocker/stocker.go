@@ -4,6 +4,7 @@ import (
     "gopkg.in/doug-martin/goqu.v4"
     _ "gopkg.in/doug-martin/goqu.v4/adapters/postgres"
     "log"
+    "errors"
 )
 
 type Stocker struct {
@@ -75,6 +76,7 @@ func (st *Stocker) DeleteAll() error {
 }
 
 type ItemDTO struct {
+    ItemId int `db:"id"`
     Name string `db:"name"`
     Amount int `db:"count"`
 }
@@ -90,7 +92,7 @@ func (st *Stocker) CheckStock(name string) ([]ItemDTO, error) {
 func (st *Stocker) checkStockByName(name string) (ItemDTO, error) {
     var itemDTO ItemDTO
     err := st.withTx(func(tx *goqu.TxDatabase) error {
-        _, err := stmtItemNameAndAmount(tx).Where(goqu.Ex{"items.name": name}).ScanStruct(&itemDTO)
+        _, err := stmtAvailableItemNameAndAmountByName(tx, name).ScanStruct(&itemDTO)
         return err
     })
 
@@ -100,17 +102,47 @@ func (st *Stocker) checkStockByName(name string) (ItemDTO, error) {
 func (st *Stocker) checkAllStock() ([]ItemDTO, error) {
     var itemDTOs []ItemDTO
     err := st.withTx(func(tx *goqu.TxDatabase) error {
-        err := stmtItemNameAndAmount(tx).ScanStructs(&itemDTOs)
+        err := stmtAvailableItemNameAndAmount(tx).ScanStructs(&itemDTOs)
         return err
     })
 
     return itemDTOs, err
 }
 
-func stmtItemNameAndAmount(tx *goqu.TxDatabase) *goqu.Dataset {
+func (st *Stocker) Sell(name string, amount int, price int) error {
+    err := st.withTx(func(tx *goqu.TxDatabase) error {
+        var itemDTO ItemDTO
+        _, err := stmtAvailableItemNameAndAmountByName(tx, name).ScanStruct(&itemDTO)
+        if err != nil {
+            return err
+        }
+        if itemDTO.Amount < amount {
+            return errors.New("short of amount")
+        }
+
+        updateTargets := tx.From("stocks").
+            Select("id").
+            Where(goqu.Ex{"item_id": itemDTO.ItemId, "sold": false}).
+            Limit(uint(amount))
+        _, err = tx.From("stocks").
+            Where(goqu.I("id").In(updateTargets)).
+            Update(goqu.Record{"sold": true, "price": price}).
+            Exec()
+
+        return err
+    })
+
+    return err
+}
+
+func stmtAvailableItemNameAndAmountByName(tx *goqu.TxDatabase, name string) *goqu.Dataset {
+    return stmtAvailableItemNameAndAmount(tx).Where(goqu.Ex{"items.name": name})
+}
+
+func stmtAvailableItemNameAndAmount(tx *goqu.TxDatabase) *goqu.Dataset {
     return tx.From("stocks").
-        Select("name", goqu.COUNT("stocks.id")).
+        Select("items.id", "name", goqu.COUNT("stocks.id")).
         InnerJoin(goqu.I("items"), goqu.On(goqu.I("items.id").Eq(goqu.I("stocks.item_id")))).
-        GroupBy("items.name").
+        GroupBy("items.id", "items.name").
         Where(goqu.Ex{"stocks.sold": false})
 }

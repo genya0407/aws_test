@@ -5,6 +5,5 @@ test $(curl -u amazon:candidate "http://localhost:8080/secret/" 2> /dev/null) = 
 
 curl "http://localhost:8080/stocker?function=deleteall"
 curl "http://localhost:8080/stocker?function=addstock&name=xxx&amount=100"
-curl "http://localhost:8080/stocker?function=addstock&name=yyy&amount=100"
+curl "http://localhost:8080/stocker?function=sell&name=xxx&amount=4"
 curl "http://localhost:8080/stocker?function=checkstock&name=xxx"
-curl "http://localhost:8080/stocker?function=checkstock"

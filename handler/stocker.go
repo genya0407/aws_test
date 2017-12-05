@@ -18,9 +18,9 @@ func (sh *StockerHandler) Handle(c *gin.Context) {
         sh.addStock(c)
     case "checkstock":
         sh.checkStock(c)
-    /*
     case "sell":
         sh.sell(c)
+    /*
     case "checksales":
         sh.checkSales(c)
     */
@@ -40,7 +40,7 @@ func (sh *StockerHandler) addStock(c *gin.Context) {
         return
     }
     amount, err := strconv.Atoi(c.DefaultQuery("amount", "1"))
-    if err != nil {
+    if err != nil || amount <= 0 {
         c.String(400, "ERROR")
         return
     }
@@ -58,6 +58,27 @@ func (sh *StockerHandler) checkStock(c *gin.Context) {
         responseBody = responseBody + item.Name + ": " + fmt.Sprintf("%d", item.Amount) + "\n"
     }
     c.String(200, responseBody)
+}
+
+func (sh *StockerHandler) sell(c *gin.Context) {
+    name := c.Query("name")
+    if name == "" {
+        c.String(400, "ERROR")
+        return
+    }
+    amount, err := strconv.Atoi(c.DefaultQuery("amount", "1"))
+    if err != nil || amount <= 0 {
+        c.String(400, "ERROR")
+        return
+    }
+    price, err := strconv.Atoi(c.DefaultQuery("price", "0"))
+    if err != nil || amount < 0 {
+        c.String(400, "ERROR")
+        return
+    }
+
+    sh.Stocker.Sell(name, amount, price)
+    c.String(200, "")
 }
 
 func (sh *StockerHandler) deleteAll(c *gin.Context) {
