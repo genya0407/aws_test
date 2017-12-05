@@ -20,10 +20,8 @@ func (sh *StockerHandler) Handle(c *gin.Context) {
         sh.checkStock(c)
     case "sell":
         sh.sell(c)
-    /*
     case "checksales":
         sh.checkSales(c)
-    */
     case "deleteall":
         sh.deleteAll(c)
     default:
@@ -79,6 +77,12 @@ func (sh *StockerHandler) sell(c *gin.Context) {
 
     sh.Stocker.Sell(name, amount, price)
     c.String(200, "")
+}
+
+func (sh *StockerHandler) checkSales(c *gin.Context) {
+    sales, _ := sh.Stocker.CheckSales()
+
+    c.String(200, fmt.Sprintf("sales: %d", sales))
 }
 
 func (sh *StockerHandler) deleteAll(c *gin.Context) {

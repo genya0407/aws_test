@@ -135,6 +135,19 @@ func (st *Stocker) Sell(name string, amount int, price int) error {
     return err
 }
 
+func (st *Stocker) CheckSales() (int, error) {
+    var sales int
+    _, err := st.DB.From("stocks").
+        Select(goqu.SUM("price")).
+        Where(goqu.Ex{"sold": true}).
+        ScanVal(&sales)
+    if err != nil {
+        return 0, err
+    } else {
+        return sales, nil
+    }
+}
+
 func stmtAvailableItemNameAndAmountByName(tx *goqu.TxDatabase, name string) *goqu.Dataset {
     return stmtAvailableItemNameAndAmount(tx).Where(goqu.Ex{"items.name": name})
 }
@@ -144,5 +157,6 @@ func stmtAvailableItemNameAndAmount(tx *goqu.TxDatabase) *goqu.Dataset {
         Select("items.id", "name", goqu.COUNT("stocks.id")).
         InnerJoin(goqu.I("items"), goqu.On(goqu.I("items.id").Eq(goqu.I("stocks.item_id")))).
         GroupBy("items.id", "items.name").
+        Order(goqu.I("id").Asc()).
         Where(goqu.Ex{"stocks.sold": false})
 }
