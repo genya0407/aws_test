@@ -73,3 +73,44 @@ func (st *Stocker) DeleteAll() error {
         return nil
     })
 }
+
+type ItemDTO struct {
+    Name string `db:"name"`
+    Amount int `db:"count"`
+}
+func (st *Stocker) CheckStock(name string) ([]ItemDTO, error) {
+    if name == "" {
+        return st.checkAllStock()
+    } else {
+        itemDTO, err := st.checkStockByName(name)
+        return []ItemDTO{ itemDTO }, err
+    }
+}
+
+func (st *Stocker) checkStockByName(name string) (ItemDTO, error) {
+    var itemDTO ItemDTO
+    err := st.withTx(func(tx *goqu.TxDatabase) error {
+        _, err := stmtItemNameAndAmount(tx).Where(goqu.Ex{"items.name": name}).ScanStruct(&itemDTO)
+        return err
+    })
+
+    return itemDTO, err
+}
+
+func (st *Stocker) checkAllStock() ([]ItemDTO, error) {
+    var itemDTOs []ItemDTO
+    err := st.withTx(func(tx *goqu.TxDatabase) error {
+        err := stmtItemNameAndAmount(tx).ScanStructs(&itemDTOs)
+        return err
+    })
+
+    return itemDTOs, err
+}
+
+func stmtItemNameAndAmount(tx *goqu.TxDatabase) *goqu.Dataset {
+    return tx.From("stocks").
+        Select("name", goqu.COUNT("stocks.id")).
+        InnerJoin(goqu.I("items"), goqu.On(goqu.I("items.id").Eq(goqu.I("stocks.item_id")))).
+        GroupBy("items.name").
+        Where(goqu.Ex{"stocks.sold": false})
+}
