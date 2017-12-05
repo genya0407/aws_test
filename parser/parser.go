@@ -11,7 +11,7 @@ type Parser struct {
 }
 
 func (p *Parser) Exec() int {
-    return p.number()
+    return p.expr()
 }
 
 func (p *Parser) peek() byte {
@@ -27,11 +27,17 @@ func (p *Parser) next() {
 }
 
 func (p *Parser) number() int {
+    log.Println("number")
+
     bs := []byte{}
+    if p.peek() == '-' {
+        bs = append(bs, '-')
+        p.next()
+    }
+
     for {
         char := p.peek()
-        _, err := strconv.Atoi(string(char))
-        if err != nil {
+        if !isDigit(char) {
             break
         }
         bs = append(bs, char)
@@ -44,5 +50,69 @@ func (p *Parser) number() int {
     return num
 }
 
+// expr = term, [{+|-} term]
+func (p *Parser) expr() int {
+    log.Println("expr")
 
+    x := p.term()
+    for {
+        switch(p.peek()) {
+        case '+':
+            p.next()
+            x += p.term()
+            continue
+        case '-':
+            p.next()
+            x -= p.term()
+            continue
+        }
+        break
+    }
+    return x
+}
+
+// term = factor, [{*|/}, factor]
+func (p *Parser) term() int {
+    log.Println("term")
+    x := p.factor()
+
+    for {
+        switch (p.peek()) {
+        case '*':
+            p.next()
+            x *= p.factor()
+            continue
+        case '/':
+            p.next()
+            x /= p.factor()
+            continue;
+        }
+        break
+    }
+    return x;
+}
+
+// factor = (, expr, ) | (, number, ) | number
+func (p *Parser) factor() int {
+    log.Println("factor")
+    if (p.peek() == '(') {
+        p.next()
+        x := p.expr()
+        if (p.peek() == ')') {
+            p.next()
+        }
+        return x
+    } else {
+        return p.number()
+    }
+}
+
+func isDigit(char byte) bool {
+    _, err := strconv.Atoi(string(char))
+    if err != nil {
+        return false
+    } else {
+        return true
+    }
+}
 
