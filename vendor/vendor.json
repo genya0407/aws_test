@@ -51,6 +51,18 @@
 			"revisionTime": "2017-11-30T02:42:24Z"
 		},
 		{
+			"checksumSHA1": "IfZcD4U1dtllJKlPNeD2aU4Jn98=",
+			"path": "github.com/lib/pq",
+			"revision": "83612a56d3dd153a94a629cd64925371c9adad78",
+			"revisionTime": "2017-11-26T05:04:59Z"
+		},
+		{
+			"checksumSHA1": "AU3fA8Sm33Vj9PBoRPSeYfxLRuE=",
+			"path": "github.com/lib/pq/oid",
+			"revision": "83612a56d3dd153a94a629cd64925371c9adad78",
+			"revisionTime": "2017-11-26T05:04:59Z"
+		},
+		{
 			"checksumSHA1": "w5RcOnfv5YDr3j2bd1YydkPiZx4=",
 			"path": "github.com/mattn/go-isatty",
 			"revision": "6ca4dbf54d38eea1a992b3c722a76a5d1c4cb25c",
@@ -67,6 +79,18 @@
 			"path": "golang.org/x/sys/unix",
 			"revision": "8b4580aae2a0dd0c231a45d3ccb8434ff533b840",
 			"revisionTime": "2017-11-30T16:26:51Z"
+		},
+		{
+			"checksumSHA1": "NUvN50OqodpRHCnOhaavdwyUy48=",
+			"path": "gopkg.in/doug-martin/goqu.v4",
+			"revision": "fcccf41c26d20796d831aafe71d121a97f2bb6fb",
+			"revisionTime": "2017-06-12T16:02:31Z"
+		},
+		{
+			"checksumSHA1": "YGvBaaZPgcGQiaDzczpuTahwnfM=",
+			"path": "gopkg.in/doug-martin/goqu.v4/adapters/postgres",
+			"revision": "fcccf41c26d20796d831aafe71d121a97f2bb6fb",
+			"revisionTime": "2017-06-12T16:02:31Z"
 		},
 		{
 			"checksumSHA1": "P/k5ZGf0lEBgpKgkwy++F7K1PSg=",
