@@ -3,6 +3,14 @@ test $(curl "http://localhost:8080/" 2> /dev/null) = AMAZON; echo $?
 test $(curl "http://localhost:8080/secret/" 2> /dev/null) = FORBIDDEN; echo $?
 test $(curl -u amazon:candidate "http://localhost:8080/secret/" 2> /dev/null) = SUCCESS; echo $?
 
+test $(curl 'http://localhost:8080/calc?abc' 2> /dev/null) = "ERROR"; echo $?
+test $(curl 'http://localhost:8080/calc?1+1' 2> /dev/null) = "2"; echo $?
+test $(curl 'http://localhost:8080/calc?2-1' 2> /dev/null) = "1"; echo $?
+test $(curl 'http://localhost:8080/calc?3*2' 2> /dev/null) = "6"; echo $?
+test $(curl 'http://localhost:8080/calc?4/2' 2> /dev/null) = "2"; echo $?
+test $(curl 'http://localhost:8080/calc?1+2*3' 2> /dev/null) = "7"; echo $?
+test $(curl 'http://localhost:8080/calc?(1+2)*3' 2> /dev/null) = "9"; echo $?
+
 curl "http://localhost:8080/stocker?function=deleteall"
 curl "http://localhost:8080/stocker?function=addstock&name=xxx&amount=100"
 curl "http://localhost:8080/stocker?function=sell&name=xxx&amount=4"

@@ -5,6 +5,11 @@ import (
     "log"
 )
 
+func Parse(str string) int {
+    p := Parser { BaseStr: str }
+    return p.Exec()
+}
+
 type Parser struct {
     BaseStr string
     curPos int
@@ -27,8 +32,6 @@ func (p *Parser) next() {
 }
 
 func (p *Parser) number() int {
-    log.Println("number")
-
     bs := []byte{}
     if p.peek() == '-' {
         bs = append(bs, '-')
@@ -52,8 +55,6 @@ func (p *Parser) number() int {
 
 // expr = term, [{+|-} term]
 func (p *Parser) expr() int {
-    log.Println("expr")
-
     x := p.term()
     for {
         switch(p.peek()) {
@@ -73,7 +74,6 @@ func (p *Parser) expr() int {
 
 // term = factor, [{*|/}, factor]
 func (p *Parser) term() int {
-    log.Println("term")
     x := p.factor()
 
     for {
@@ -94,7 +94,6 @@ func (p *Parser) term() int {
 
 // factor = (, expr, ) | (, number, ) | number
 func (p *Parser) factor() int {
-    log.Println("factor")
     if (p.peek() == '(') {
         p.next()
         x := p.expr()

@@ -19,6 +19,7 @@ func main() {
     r.Use(gzip.Gzip(gzip.DefaultCompression))
     r.GET("/", handler.Amazon)
     r.GET("/secret/", handler.BasicAuth)
+    r.GET("/calc", handler.CalcHandler)
     r.GET("/stocker", stockerHandler.Handle)
 
     r.Run(":" + port)
